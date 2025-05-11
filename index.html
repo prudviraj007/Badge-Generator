@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Badge Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.selected {
+            transform: scale(1.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #3b82f6;
+        }
+        .color-picker-container {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid #e5e7eb;
+        }
+        .color-picker-container:hover {
+            transform: scale(1.1);
+        }
+        .color-picker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .badge-preview {
+            transition: all 0.3s ease;
+        }
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            transform: translateY(-2px);
+        }
+        .copy-btn.copied {
+            background-color: #10B981 !important;
+        }
+        .color-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .color-input-wrapper input {
+            padding-left: 40px !important;
+        }
+        .color-input-preview {
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Social Badge Generator</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Create custom badges for your social profiles with personalized colors and styles</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Controls Section -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Customize Your Badge</h2>
+                
+                <div class="space-y-6">
+                    <!-- Platform Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Platform</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button data-platform="youtube" class="platform-btn flex items-center justify-center gap-2 py-2 px-4 rounded-lg border hover:bg-gray-50 transition-colors">
+                                <i class="fab fa-youtube text-red-600"></i>
+                                <span>YouTube</span>
+                            </button>
+                            <button data-platform="github" class="platform-btn flex items-center justify-center gap-2 py-2 px-4 rounded-lg border hover:bg-gray-50 transition-colors">
+                                <i class="fab fa-github text-gray-800"></i>
+                                <span>GitHub</span>
+                            </button>
+                            <button data-platform="reddit" class="platform-btn flex items-center justify-center gap-2 py-2 px-4 rounded-lg border hover:bg-gray-50 transition-colors">
+                                <i class="fab fa-reddit text-orange-500"></i>
+                                <span>Reddit</span>
+                            </button>
+                            <button data-platform="twitter" class="platform-btn flex items-center justify-center gap-2 py-2 px-4 rounded-lg border hover:bg-gray-50 transition-colors">
+                                <i class="fab fa-twitter text-blue-400"></i>
+                                <span>Twitter</span>
+                            </button>
+                            <button data-platform="instagram" class="platform-btn flex items-center justify-center gap-2 py-2 px-4 rounded-lg border hover:bg-gray-50 transition-colors">
+                                <i class="fab fa-instagram text-purple-600"></i>
+                                <span>Instagram</span>
+                            </button>
+                            <button data-platform="linkedin" class="platform-btn flex items-center justify-center gap-2 py-2 px-4 rounded-lg border hover:bg-gray-50 transition-colors">
+                                <i class="fab fa-linkedin text-blue-600"></i>
+                                <span>LinkedIn</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Username Input -->
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                        <input type="text" id="username" placeholder="yourusername" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- Color Customization -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Background Color</label>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <!-- Background color presets -->
+                                <div class="color-option bg-blue-500" data-color="#3b82f6"></div>
+                                <div class="color-option bg-red-500" data-color="#ef4444"></div>
+                                <div class="color-option bg-green-500" data-color="#10b981"></div>
+                                <div class="color-option bg-yellow-500" data-color="#f59e0b"></div>
+                                <div class="color-option bg-purple-500" data-color="#8b5cf6"></div>
+                                <div class="color-option bg-pink-500" data-color="#ec4899"></div>
+                                <div class="color-option bg-indigo-500" data-color="#6366f1"></div>
+                                <div class="color-option bg-gray-800" data-color="#1f2937"></div>
+                                <div class="color-picker-container bg-white">
+                                    <input type="color" id="bgColor" value="#3b82f6" class="color-picker">
+                                </div>
+                            </div>
+                            <div class="color-input-wrapper">
+                                <div class="color-input-preview" id="bgColorPreview" style="background-color: #3b82f6;"></div>
+                                <input type="text" id="bgColorValue" value="#3b82f6" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Text Color</label>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <!-- Text color presets -->
+                                <div class="color-option bg-white border border-gray-200" data-color="#ffffff"></div>
+                                <div class="color-option bg-gray-100" data-color="#f3f4f6"></div>
+                                <div class="color-option bg-gray-200" data-color="#e5e7eb"></div>
+                                <div class="color-option bg-gray-800" data-color="#1f2937"></div>
+                                <div class="color-option bg-black" data-color="#000000"></div>
+                                <div class="color-option bg-yellow-200" data-color="#fef08a"></div>
+                                <div class="color-option bg-blue-100" data-color="#dbeafe"></div>
+                                <div class="color-option bg-green-100" data-color="#dcfce7"></div>
+                                <div class="color-picker-container bg-white">
+                                    <input type="color" id="textColor" value="#ffffff" class="color-picker">
+                                </div>
+                            </div>
+                            <div class="color-input-wrapper">
+                                <div class="color-input-preview" id="textColorPreview" style="background-color: #ffffff;"></div>
+                                <input type="text" id="textColorValue" value="#ffffff" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Badge Style -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Badge Style</label>
+                        <div class="flex gap-3">
+                            <button data-style="rounded" class="style-btn px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors">Rounded</button>
+                            <button data-style="square" class="style-btn px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors">Square</button>
+                            <button data-style="pill" class="style-btn px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors">Pill</button>
+                        </div>
+                    </div>
+
+                    <!-- Size Options -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Size</label>
+                        <div class="flex gap-3">
+                            <button data-size="sm" class="size-btn px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors">Small</button>
+                            <button data-size="md" class="size-btn px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors active">Medium</button>
+                            <button data-size="lg" class="size-btn px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors">Large</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview & Code Section -->
+            <div class="space-y-6">
+                <!-- Badge Preview -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Preview</h2>
+                    <div class="flex justify-center">
+                        <div id="badgePreview" class="badge-preview inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg">
+                            <i class="fab fa-github mr-2"></i>
+                            <span>username</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HTML Code -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-semibold text-gray-800">HTML Code</h2>
+                        <button id="copyBtn" class="copy-btn flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                            <i class="far fa-copy"></i>
+                            <span>Copy Code</span>
+                        </button>
+                    </div>
+                    <pre id="htmlCode" class="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>&lt;!-- Social Badge --&gt;
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"&gt;
+&lt;style&gt;
+  .social-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+&lt;/style&gt;
+&lt;div class="social-badge" style="background-color: #3b82f6; color: #ffffff; padding: 0.5rem 1rem; border-radius: 0.5rem;"&gt;
+  &lt;i class="fab fa-github mr-2"&gt;&lt;/i&gt;
+  &lt;span&gt;username&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+                </div>
+
+                <!-- How to Use -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">How to Use</h2>
+                    <ol class="list-decimal pl-5 space-y-2 text-gray-700">
+                        <li>Customize your badge using the options on the left</li>
+                        <li>Copy the HTML code</li>
+                        <li>Paste it into your website or README file</li>
+                        <li>The code includes everything needed to display the badge correctly</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const platformBtns = document.querySelectorAll('.platform-btn');
+            const usernameInput = document.getElementById('username');
+            const bgColorInput = document.getElementById('bgColor');
+            const textColorInput = document.getElementById('textColor');
+            const bgColorValue = document.getElementById('bgColorValue');
+            const textColorValue = document.getElementById('textColorValue');
+            const bgColorPreview = document.getElementById('bgColorPreview');
+            const textColorPreview = document.getElementById('textColorPreview');
+            const styleBtns = document.querySelectorAll('.style-btn');
+            const sizeBtns = document.querySelectorAll('.size-btn');
+            const badgePreview = document.getElementById('badgePreview');
+            const htmlCode = document.getElementById('htmlCode');
+            const copyBtn = document.getElementById('copyBtn');
+            const colorOptions = document.querySelectorAll('.color-option');
+
+            // Default values
+            let currentPlatform = 'github';
+            let currentStyle = 'rounded';
+            let currentSize = 'md';
+            let currentBgColor = '#3b82f6';
+            let currentTextColor = '#ffffff';
+            let currentUsername = 'username';
+
+            // Initialize
+            updateBadge();
+
+            // Event Listeners
+            platformBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    platformBtns.forEach(b => b.classList.remove('bg-blue-100', 'border-blue-300'));
+                    this.classList.add('bg-blue-100', 'border-blue-300');
+                    currentPlatform = this.dataset.platform;
+                    updateBadge();
+                });
+            });
+
+            usernameInput.addEventListener('input', function() {
+                currentUsername = this.value || 'username';
+                updateBadge();
+            });
+
+            // Color option click handler
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const color = this.dataset.color;
+                    if (this.parentElement.contains(bgColorInput)) {
+                        currentBgColor = color;
+                        bgColorInput.value = color;
+                        bgColorValue.value = color;
+                        bgColorPreview.style.backgroundColor = color;
+                    } else {
+                        currentTextColor = color;
+                        textColorInput.value = color;
+                        textColorValue.value = color;
+                        textColorPreview.style.backgroundColor = color;
+                    }
+                    updateBadge();
+                    
+                    // Update selected state
+                    const container = this.closest('div').id === 'bgColorOptions' ? 'bg' : 'text';
+                    document.querySelectorAll(`.${container}-color-option`).forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // Color input change handlers
+            bgColorInput.addEventListener('input', function() {
+                currentBgColor = this.value;
+                bgColorValue.value = this.value;
+                bgColorPreview.style.backgroundColor = this.value;
+                updateSelectedColor('bg', this.value);
+                updateBadge();
+            });
+
+            textColorInput.addEventListener('input', function() {
+                currentTextColor = this.value;
+                textColorValue.value = this.value;
+                textColorPreview.style.backgroundColor = this.value;
+                updateSelectedColor('text', this.value);
+                updateBadge();
+            });
+
+            // Manual color input handlers
+            bgColorValue.addEventListener('input', function() {
+                if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                    currentBgColor = this.value;
+                    bgColorInput.value = this.value;
+                    bgColorPreview.style.backgroundColor = this.value;
+                    updateSelectedColor('bg', this.value);
+                    updateBadge();
+                }
+            });
+
+            textColorValue.addEventListener('input', function() {
+                if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                    currentTextColor = this.value;
+                    textColorInput.value = this.value;
+                    textColorPreview.style.backgroundColor = this.value;
+                    updateSelectedColor('text', this.value);
+                    updateBadge();
+                }
+            });
+
+            styleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    styleBtns.forEach(b => b.classList.remove('bg-blue-100', 'border-blue-300'));
+                    this.classList.add('bg-blue-100', 'border-blue-300');
+                    currentStyle = this.dataset.style;
+                    updateBadge();
+                });
+            });
+
+            sizeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    sizeBtns.forEach(b => b.classList.remove('bg-blue-100', 'border-blue-300'));
+                    this.classList.add('bg-blue-100', 'border-blue-300');
+                    currentSize = this.dataset.size;
+                    updateBadge();
+                });
+            });
+
+            copyBtn.addEventListener('click', function() {
+                const code = document.getElementById('htmlCode').textContent;
+                navigator.clipboard.writeText(code).then(() => {
+                    copyBtn.classList.add('copied');
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i><span>Copied!</span>';
+                    setTimeout(() => {
+                        copyBtn.classList.remove('copied');
+                        copyBtn.innerHTML = '<i class="far fa-copy"></i><span>Copy Code</span>';
+                    }, 2000);
+                });
+            });
+
+            // Update selected color indicator
+            function updateSelectedColor(type, color) {
+                const colorOptions = document.querySelectorAll(`.${type}-color-option`);
+                colorOptions.forEach(option => {
+                    option.classList.remove('selected');
+                    if (option.dataset.color === color) {
+                        option.classList.add('selected');
+                    }
+                });
+            }
+
+            // Update badge preview and code
+            function updateBadge() {
+                // Get platform icon class
+                const platformIcons = {
+                    youtube: 'fab fa-youtube',
+                    github: 'fab fa-github',
+                    reddit: 'fab fa-reddit',
+                    twitter: 'fab fa-twitter',
+                    instagram: 'fab fa-instagram',
+                    linkedin: 'fab fa-linkedin'
+                };
+
+                // Get style classes
+                const borderRadius = {
+                    rounded: '0.5rem',
+                    square: '0',
+                    pill: '9999px'
+                };
+
+                // Get size classes
+                const padding = {
+                    sm: '0.25rem 0.75rem',
+                    md: '0.5rem 1rem',
+                    lg: '0.75rem 1.5rem'
+                };
+
+                const fontSize = {
+                    sm: '0.875rem',
+                    md: '1rem',
+                    lg: '1.125rem'
+                };
+
+                // Update preview
+                badgePreview.className = `badge-preview inline-flex items-center`;
+                badgePreview.style.backgroundColor = currentBgColor;
+                badgePreview.style.color = currentTextColor;
+                badgePreview.style.padding = padding[currentSize];
+                badgePreview.style.borderRadius = borderRadius[currentStyle];
+                badgePreview.style.fontSize = fontSize[currentSize];
+                badgePreview.innerHTML = `<i class="${platformIcons[currentPlatform]} mr-2"></i><span>${currentUsername}</span>`;
+
+                // Update code
+                const escapedUsername = currentUsername.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                htmlCode.innerHTML = `<code>&lt;!-- Social Badge --&gt;
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"&gt;
+&lt;style&gt;
+  .social-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+&lt;/style&gt;
+&lt;div class="social-badge" style="background-color: ${currentBgColor}; color: ${currentTextColor}; padding: ${padding[currentSize]}; border-radius: ${borderRadius[currentStyle]}; font-size: ${fontSize[currentSize]};"&gt;
+  &lt;i class="${platformIcons[currentPlatform]} mr-2"&gt;&lt;/i&gt;
+  &lt;span&gt;${escapedUsername}&lt;/span&gt;
+&lt;/div&gt;</code>`;
+            }
+
+            // Activate GitHub button by default
+            document.querySelector('[data-platform="github"]').click();
+            document.querySelector('[data-style="rounded"]').click();
+            document.querySelector('[data-size="md"]').click();
+            
+            // Select default colors
+            document.querySelector('.color-option[data-color="#3b82f6"]').classList.add('selected');
+            document.querySelector('.color-option[data-color="#ffffff"]').classList.add('selected');
+        });
+    </script>
+</body>
+</html>
